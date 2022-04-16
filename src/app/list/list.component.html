@@ -1,0 +1,22 @@
+
+<div class="table">
+  <div class="header">Organizer</div>
+  <div class="header">Subject</div>
+  <div class="header">Von</div>
+  <div class="header">Bis</div>
+  <div class="header"></div>
+  
+  <ng-container *ngFor="let item of events">
+    <div>{{item.organizer}}</div>
+    <div>{{item.betreff}}</div>
+    <div>{{item.beginn?.toDate() | date: 'dd.MM.yyyy HH:mm'}}</div>
+    <div>{{item.ende?.toDate() | date: 'dd.MM.yyyy HH:mm'}}</div>
+    <div><button mat-button color="primary" [routerLink]="['/edit', item.id]"><mat-icon>save</mat-icon>Edit</button></div>
+  </ng-container>
+
+
+</div>
+
+<div>
+  <button mat-button color="primary" [routerLink]="['/create']"><mat-icon>save</mat-icon>Create</button>
+</div>

@@ -1,0 +1,97 @@
+<div>
+    <button mat-button color="primary" [routerLink]="['/list']">Zurück</button>
+</div>
+
+<div *ngIf="data">
+    <div class="table">
+
+
+        <div style="grid-column: 1 / span 4">
+            <div class="my-label">ID</div> 
+            <div>{{data.id ? data.id : 'leer'}}</div>
+        </div>
+
+        <div style="grid-column: 1 / span 4">
+            <div class="my-label">Betreff</div> 
+            <mat-form-field style="width: 100%" appearance="fill">
+                <input matInput [(ngModel)]="data.betreff">
+            </mat-form-field>
+        </div>
+
+
+
+        <div style="grid-column: 1">
+            <div class="my-label">Beginn</div> 
+            <mat-form-field style="width: 100%" appearance="fill">
+                <input matInput [matDatepicker]="picker1" [(ngModel)]="data.beginn">
+                <mat-hint>DD.MM.YYYY</mat-hint>
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>              
+            </mat-form-field>
+        </div>
+
+        <div style="grid-column: 2">
+            <div class="my-label">Beginn Uhrzeit</div> 
+            <mat-form-field style="width: 100px" appearance="fill">
+                <mat-select [(ngModel)]="data._beginnTime">
+                    <mat-option *ngFor="let item of time" [value]="item">
+                      {{item}}
+                    </mat-option>
+                  </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div style="grid-column: 3">
+            <div class="my-label">Ende Uhrzeit</div> 
+            <mat-form-field style="width: 100%" appearance="fill">
+                <input matInput [matDatepicker]="picker2" [(ngModel)]="data.ende">
+                <mat-hint>DD.MM.YYYY</mat-hint>
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>              
+            </mat-form-field>
+        </div>
+
+        <div style="grid-column: 4">
+            <div class="my-label">Uhrzeit</div> 
+            <mat-form-field style="width: 100px" appearance="fill">
+                <mat-select [(ngModel)]="data._endeTime">
+                    <mat-option *ngFor="let item of time" [value]="item">
+                      {{item}}
+                    </mat-option>
+                  </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div style="grid-column: 1 / span 4">
+        <mat-form-field style="width:100%" appearance="fill">
+            <mat-label>Teilnehmer</mat-label>
+            <mat-chip-list #chipList aria-label="Fruit selection">
+              <mat-chip *ngFor="let teiln of data.teilnehmer" (removed)="removeParticipant(teiln)">
+                {{teiln}}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+              <input placeholder="Teilnehmer hinzufügen..."
+                     [matChipInputFor]="chipList"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     [matChipInputAddOnBlur]="true"
+                     (matChipInputTokenEnd)="addParticipant($event)">
+            </mat-chip-list>
+          </mat-form-field>
+        </div>
+
+        <div style="grid-column: 1 / span 4">
+            <div class="my-label">Body</div> 
+            <mat-form-field style="width: 100%" appearance="fill">
+                <textarea matInput [(ngModel)]="data.text"></textarea>
+            </mat-form-field>
+        </div>
+    
+    </div>
+
+    <div>
+        <button mat-button color="primary" (click)="store()">Speichern</button>
+        <button mat-button color="primary" (click)="delete()">Löschen</button>
+    </div>
+</div>

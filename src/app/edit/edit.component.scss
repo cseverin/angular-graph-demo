@@ -1,0 +1,13 @@
+.table{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width:600px;
+}
+
+.my-label{
+    font-size: 9px;
+}
+
+.table > div{
+    padding:4px;
+}

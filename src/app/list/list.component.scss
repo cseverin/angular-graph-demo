@@ -1,0 +1,17 @@
+.table{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    width:100%;
+}
+
+.header{
+    font-weight: bold;
+    border-bottom: 1px solid black !important;
+}
+
+.table > div{
+    border-bottom: 1px solid #cccccc;
+    line-height: 35px;
+    vertical-align: middle;
+    height: 35px;
+}
