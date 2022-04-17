@@ -17,6 +17,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatChipsModule } from "@angular/material/chips";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 
 import { HttpClientModule } from '@angular/common/http';
@@ -48,6 +49,7 @@ const routes: Routes = [
     HttpClientModule,
     MatButtonModule,
     MatSnackBarModule,
+    MatCheckboxModule,
     BrowserAnimationsModule,
     MatIconModule,
     MatDatepickerModule,

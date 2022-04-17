@@ -1,22 +1,29 @@
 
 <div class="table">
-  <div class="header">Organizer</div>
-  <div class="header">Subject</div>
+<!--
+  <div class="header">Organisator</div>
+  <div class="header">Betreff</div>
   <div class="header">Von</div>
   <div class="header">Bis</div>
   <div class="header"></div>
-  
-  <ng-container *ngFor="let item of events">
-    <div>{{item.organizer}}</div>
-    <div>{{item.betreff}}</div>
-    <div>{{item.beginn?.toDate() | date: 'dd.MM.yyyy HH:mm'}}</div>
-    <div>{{item.ende?.toDate() | date: 'dd.MM.yyyy HH:mm'}}</div>
-    <div><button mat-button color="primary" [routerLink]="['/edit', item.id]"><mat-icon>save</mat-icon>Edit</button></div>
+-->
+  <ng-container *ngFor="let month of events.list">
+    <div class="cal-headline">{{month.label}}</div>
+    <ng-container *ngFor="let week of month.list">
+      <div class="cal-headline">{{week.label}}</div>
+      <ng-container *ngFor="let item of week.list">
+      <div>{{item.organizer}}</div>
+      <div>{{item.betreff}}</div>
+      <div>{{item.beginn?.toDate() | date: item.allDay ? 'dd.MM.yyyy':'dd.MM.yyyy HH:mm'}}{{item.allDay ? ' (ganztg)':''}}</div>
+      <div>{{item.allDay && item._numberDays==0 ? '' : (item.ende?.toDate() | date: item.allDay ? 'dd.MM.yyyy':'dd.MM.yyyy HH:mm')}}</div>
+      <div><button mat-button color="primary" [routerLink]="['/edit', item.id]">Bearbeiten</button></div>
+    </ng-container>
+    </ng-container>
   </ng-container>
 
 
 </div>
 
 <div class="buttons">
-  <button mat-button color="primary" [routerLink]="['/create']"><mat-icon>save</mat-icon>Create</button>
+  <button mat-button color="primary" (click)="more()">Weitere Termine laden</button>
 </div>

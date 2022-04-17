@@ -8,6 +8,7 @@ import { EventBean } from '../beans/event.bean';
 import { DateUtil } from '../date.util';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {MatChipInputEvent} from '@angular/material/chips';
+import { AttendeeBean } from '../beans/attendee.bean';
 
 @Component({
   selector: 'app-edit',
@@ -125,22 +126,24 @@ export class EditComponent implements OnInit {
   }
 
   addParticipant(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
+    let value:string = (event.value || '').trim();
 
     // Add our fruit
-    if (value) {
-      this.data?.teilnehmer.push(value);
+    if (value && this.data) {
+      this.data.attendees.push(new AttendeeBean(value, false, false));
     }
 
     // Clear the input value
     event.chipInput!.clear();
   }
 
-  removeParticipant(part: string): void {
-    const index:number | undefined = this.data?.teilnehmer.indexOf(part);
+  removeParticipant(value: AttendeeBean): void {
+    
 
-    if (index && index >= 0) {
-      this.data?.teilnehmer.splice(index, 1);
+    const index:number | undefined = this.data?.attendees.indexOf(value);
+
+    if (index !=null && index >= 0) {
+      this.data?.attendees.splice(index, 1);
     }
   }
 

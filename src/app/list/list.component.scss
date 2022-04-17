@@ -19,3 +19,9 @@
 .buttons{
     margin-top:16px;
 }
+
+.cal-headline{
+    grid-column: 1 / span 5;
+    font-weight: bold;
+    border-bottom: 1px solid black !important;
+}

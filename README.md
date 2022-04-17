@@ -26,6 +26,6 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 https://docs.microsoft.com/de-de/graph/tutorials/javascript \
 https://outlook.office.com/calendar/view/month \
-https://aad.portal.azure.com/ 
-
+https://aad.portal.azure.com/ \ 
+https://teams.microsoft.com
 

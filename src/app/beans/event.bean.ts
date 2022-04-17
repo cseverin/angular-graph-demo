@@ -2,6 +2,7 @@ import { Event, Attendee } from "@microsoft/microsoft-graph-types";
 import * as moment from "moment";
 import { Moment } from "moment";
 import { DateUtil } from "../date.util";
+import { AttendeeBean } from "./attendee.bean";
 
 export class EventBean {
 
@@ -19,7 +20,17 @@ export class EventBean {
 
     organizer?: string;
 
-    teilnehmer: string[] = [];
+    headline: boolean = false;
+
+    allDay:boolean = false;
+
+    attendees: AttendeeBean[] = [];
+
+    onlineMeeting: boolean = false;
+    onlineMeetingJoinUrl?:string;
+    onlineMeetingConferenceId?:string;
+
+    _numberDays: number = 0;
 
     constructor() {
 
@@ -27,35 +38,55 @@ export class EventBean {
 
     read(e: Event): EventBean {
         this.betreff = e.subject?.toString();
-        console.log("Betreff: " + this.betreff);
         this.id = e.id;
 
         let date1: Date | null = e.start && e.start.dateTime ? DateUtil.stringToDate(e.start.dateTime.valueOf()) : null;
         let date2: Date | null = e.end && e.end.dateTime ? DateUtil.stringToDate(e.end.dateTime.valueOf()) : null;
+
+        if (e.isAllDay){
+            this.allDay = e.isAllDay;
+        }
 
         if (date1) {
             this.beginn = moment(date1);
             this._beginnTime = DateUtil.getTimeString(date1);
         }
         if (date2) {
-            this.ende = moment(date2);
+            this.ende = this.allDay ? moment(date2).add(-1, 'day'):moment(date2);
             this._endeTime = DateUtil.getTimeString(date2);
         }
         if (e.organizer && e.organizer.emailAddress && e.organizer.emailAddress.name) {
             this.organizer = e.organizer.emailAddress.name?.toString();
         }
 
+        if (this.beginn && this.ende){
+            this._numberDays = this.ende.diff(this.beginn, 'day');
+        }
+
         if (e.body && e.body.content) {
             this.text = e.body.content.toString();
         }
 
-        this.teilnehmer.splice(0);
+
+        this.attendees.splice(0);
         if (e.attendees){
             for (let att of e.attendees){
-                if (att.emailAddress && att.emailAddress.name){
-                    this.teilnehmer.push(att.emailAddress.name.toString());
+                if (att.emailAddress && att.emailAddress.name && att.status){
+                    let status:string | undefined = att.status.response?.toString();
+                    let accepted:boolean = 'accepted' == status;
+                    let declined: boolean = 'declined' == status;
+                    let bean:AttendeeBean = new AttendeeBean(att.emailAddress.name.toString(), accepted, declined);
+                    this.attendees.push(bean);
                 }
             }
+        }
+
+        if (e.isOnlineMeeting && e.onlineMeeting){
+            this.onlineMeeting = true;
+            this.onlineMeetingJoinUrl = e.onlineMeeting.joinUrl?.toString();
+            this.onlineMeetingConferenceId = e.onlineMeeting.conferenceId?.toString();
+        }else{
+            this.onlineMeeting = false;
         }
 
         return this;
@@ -63,23 +94,23 @@ export class EventBean {
 
     write(ianaTimeZone: string): Event {
 
+    
 
-        let beginn: string | null = this.beginn ? DateUtil.dateToString(this.beginn.toDate()) + 'T' + this._beginnTime : null;
-        let ende: string | null = this.ende ? DateUtil.dateToString(this.ende.toDate()) + 'T' + this._endeTime : null;
+        let beginn: string | null = this.beginn ? DateUtil.dateToString(this.beginn.toDate()) + 'T' + (this.allDay ? '00:00' : this._beginnTime) : null;
+        let ende: string | null = this.ende ? DateUtil.dateToString(this.allDay ? this.ende.add(1, 'day').toDate():this.ende.toDate()) + 'T' + (this.allDay ? '00:00' : this._endeTime) : null;
 
 
         let attendees: Attendee[] = [];
-        if (this.teilnehmer && this.teilnehmer.length > 0) {
+        if (this.attendees && this.attendees.length > 0) {
 
-            for (let teiln of this.teilnehmer) {
-                if (teiln.length > 0) {
-
+            for (let teiln of this.attendees) {
+                if (teiln.emailAddress.length > 0) {
                     let teiln0 = {
                         type: 'required',
                         emailAddress: {
-                            address: teiln
+                            address: teiln.emailAddress
                         }
-                    };
+                    }
                     attendees.push(<Attendee>teiln0);
                 }
             }
@@ -97,8 +128,12 @@ export class EventBean {
                 timeZone: ianaTimeZone
             },
             body: {},
-            attendees: attendees
+            attendees: attendees,
+            isOnlineMeeting: this.onlineMeeting,
+            isAllDay: this.allDay,
+            onlineMeeting:{}
         };
+
 
         // Body
         newEvent.body = {
@@ -106,8 +141,11 @@ export class EventBean {
             content: this.text
         };
 
-
-
+        // Online Meeting
+        newEvent.onlineMeeting = {
+            conferenceId: this.onlineMeetingConferenceId,
+            joinUrl: this.onlineMeetingJoinUrl
+        }
 
         return <Event>newEvent;
 

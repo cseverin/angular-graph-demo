@@ -7,12 +7,12 @@
 
 
         <div style="grid-column: 1 / span 4">
-            <div class="my-label">ID</div> 
+            <div class="my-label">ID</div>
             <div>{{data.id ? data.id : 'leer'}}</div>
         </div>
 
         <div style="grid-column: 1 / span 4">
-            <div class="my-label">Betreff</div> 
+            <div class="my-label">Betreff</div>
             <mat-form-field style="width: 100%" appearance="fill">
                 <input matInput [(ngModel)]="data.betreff">
             </mat-form-field>
@@ -21,73 +21,104 @@
 
 
         <div style="grid-column: 1">
-            <div class="my-label">Beginn</div> 
+            <div class="my-label">Beginn</div>
             <mat-form-field style="width: 100%" appearance="fill">
                 <input matInput [matDatepicker]="picker1" [(ngModel)]="data.beginn">
                 <mat-hint>DD.MM.YYYY</mat-hint>
                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                <mat-datepicker #picker1></mat-datepicker>              
+                <mat-datepicker #picker1></mat-datepicker>
             </mat-form-field>
         </div>
 
-        <div style="grid-column: 2">
-            <div class="my-label">Beginn Uhrzeit</div> 
-            <mat-form-field style="width: 100px" appearance="fill">
-                <mat-select [(ngModel)]="data._beginnTime">
-                    <mat-option *ngFor="let item of time" [value]="item">
-                      {{item}}
-                    </mat-option>
-                  </mat-select>
-            </mat-form-field>
+        <div style="grid-column: 2 / span 2">
+            <ng-container *ngIf="!data.allDay">
+                <div class="my-label">Beginn Uhrzeit</div>
+                <mat-form-field style="width: 100px" appearance="fill">
+                    <mat-select [(ngModel)]="data._beginnTime">
+                        <mat-option *ngFor="let item of time" [value]="item">
+                            {{item}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </ng-container>
         </div>
 
-        <div style="grid-column: 3">
-            <div class="my-label">Ende Uhrzeit</div> 
+        <div style="grid-column: 4">
+            <div class="ganztg">
+                <mat-checkbox [(ngModel)]="data.allDay">ganztägig</mat-checkbox>
+            </div>
+        </div>
+
+        <div style="grid-column: 1">
+            <div class="my-label">Ende</div>
             <mat-form-field style="width: 100%" appearance="fill">
                 <input matInput [matDatepicker]="picker2" [(ngModel)]="data.ende">
                 <mat-hint>DD.MM.YYYY</mat-hint>
                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                <mat-datepicker #picker2></mat-datepicker>              
+                <mat-datepicker #picker2></mat-datepicker>
             </mat-form-field>
         </div>
 
-        <div style="grid-column: 4">
-            <div class="my-label">Uhrzeit</div> 
-            <mat-form-field style="width: 100px" appearance="fill">
-                <mat-select [(ngModel)]="data._endeTime">
-                    <mat-option *ngFor="let item of time" [value]="item">
-                      {{item}}
-                    </mat-option>
-                  </mat-select>
+        <div style="grid-column: 2 / span 3">
+            <ng-container *ngIf="!data.allDay">
+                <div class="my-label">Uhrzeit Uhrzeit</div>
+                <mat-form-field style="width: 100px" appearance="fill">
+                    <mat-select [(ngModel)]="data._endeTime">
+                        <mat-option *ngFor="let item of time" [value]="item">
+                            {{item}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </ng-container>
+        </div>
+
+        <ng-container *ngIf="data.onlineMeetingJoinUrl">
+            <div style="grid-column: 1 / span 2" class="online-meeting">
+                <mat-checkbox [(ngModel)]="data.onlineMeeting" [disabled]="data.id != null">Online Meeting
+                </mat-checkbox>
+            </div>
+            <div style="grid-column: 3 / span 2" class="online-meeting-link">
+                <div *ngIf="data.onlineMeeting && data.onlineMeetingJoinUrl">
+                    <a [href]="data.onlineMeetingJoinUrl" target="_new" class="link-online-meeting">Online Meeting
+                        öffnen</a>
+                </div>
+
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="data.onlineMeetingJoinUrl == null">
+            <div style="grid-column: 1 / span 4" class="online-meeting">
+                <mat-checkbox [(ngModel)]="data.onlineMeeting" [disabled]="data.id != null">Online Meeting
+                </mat-checkbox>
+            </div>
+        </ng-container>
+
+
+        <div style="grid-column: 1 / span 4">
+            <mat-form-field style="width:100%" appearance="fill">
+                <mat-label>Teilnehmer</mat-label>
+                <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let att of data.attendees" (removed)="removeParticipant(att)" 
+                        [class.attendee-declined]="att.declined">
+                        {{att.emailAddress}} <mat-icon *ngIf="att.accepted" style="font-size: 20px">done</mat-icon>
+                        <button matChipRemove>
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </mat-chip>
+                    <input placeholder="Teilnehmer hinzufügen..." [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
+                        (matChipInputTokenEnd)="addParticipant($event)">
+                </mat-chip-list>
             </mat-form-field>
         </div>
 
         <div style="grid-column: 1 / span 4">
-        <mat-form-field style="width:100%" appearance="fill">
-            <mat-label>Teilnehmer</mat-label>
-            <mat-chip-list #chipList aria-label="Fruit selection">
-              <mat-chip *ngFor="let teiln of data.teilnehmer" (removed)="removeParticipant(teiln)">
-                {{teiln}}
-                <button matChipRemove>
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip>
-              <input placeholder="Teilnehmer hinzufügen..."
-                     [matChipInputFor]="chipList"
-                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                     [matChipInputAddOnBlur]="true"
-                     (matChipInputTokenEnd)="addParticipant($event)">
-            </mat-chip-list>
-          </mat-form-field>
-        </div>
-
-        <div style="grid-column: 1 / span 4">
-            <div class="my-label">Body</div> 
+            <div class="my-label">Body</div>
             <mat-form-field style="width: 100%" appearance="fill">
                 <textarea matInput [(ngModel)]="data.text"></textarea>
             </mat-form-field>
         </div>
-    
+
     </div>
 
     <div>

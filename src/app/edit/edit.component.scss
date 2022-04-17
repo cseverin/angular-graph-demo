@@ -1,6 +1,6 @@
 .table{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 2fr 2fr 2fr;
     width:600px;
 }
 
@@ -10,4 +10,26 @@
 
 .table > div{
     padding:4px;
+}
+
+.link-online-meeting{
+    text-decoration: underline;
+}
+
+.online-meeting{
+    padding: 8px 0px 16px 0px !important;
+}
+
+.online-meeting-link{
+    text-align: right;
+}
+
+.ganztg{
+    height: 70px;
+    line-height: 70px;
+    vertical-align: middle;
+}
+
+.attendee-declined{
+    text-decoration:line-through;
 }

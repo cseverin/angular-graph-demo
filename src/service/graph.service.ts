@@ -1,19 +1,12 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AccountInfo, InteractionType, PublicClientApplication } from '@azure/msal-browser';
-import { Client } from '@microsoft/microsoft-graph-client';
+import { Client, GraphRequest } from '@microsoft/microsoft-graph-client';
 import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
 import { Event, User } from '@microsoft/microsoft-graph-types';
 import * as moment from 'moment';
 import * as tz from "moment-timezone";
 import { EventBean } from 'src/app/beans/event.bean';
-import { DateUtil } from 'src/app/date.util';
-
-const msalConfig = {
-  auth: {
-    clientId: '9b77de69-e75b-4486-9aed-2c8b1522b2d0',
-    redirectUri: 'http://localhost:4200'
-  }
-};
+import { environment } from 'src/environments/environment';
 
 const msalRequest = {
   scopes: [
@@ -29,7 +22,12 @@ const msalRequest = {
 })
 export class GraphService {
 
-  msalClient: PublicClientApplication = new PublicClientApplication(msalConfig);
+  msalClient: PublicClientApplication = new PublicClientApplication({
+    auth: {
+      clientId: environment.clientId,
+      redirectUri: environment.redirectUri
+    }
+  });
 
   client?: Client;
 
@@ -88,25 +86,31 @@ export class GraphService {
   }
 
 
-  getEvents(): Promise<any> {
+  getEvents(start:Date, end:Date, top:number): Promise<any> {
     let userString: string | null = sessionStorage.getItem('graphUser');
     if (userString && this.client) {
       let userObj = JSON.parse(userString);
       let ianaTimeZone: string = this.getTimezone(userObj);
-      let startOfWeek = moment(new Date()).startOf('week').utc();
-      let endOfWeek = moment(startOfWeek).add(7, 'day');
+     
+      let startStr:string = moment(start).utc().format();
+      let endStr:string = moment(end).utc().format();
+      
+
+      console.log('Start-End: {} bis {}', startStr, endStr);
+
       return this.client.api('/me/calendarview')
         // Set the Prefer=outlook.timezone header so date/times are in
         // user's preferred time zone
         .header("Prefer", `outlook.timezone="${ianaTimeZone}"`)
         // Add the startDateTime and endDateTime query parameters
-        .query({ startDateTime: startOfWeek.format(), endDateTime: endOfWeek.format() })
+        .query({ startDateTime: startStr, endDateTime: endStr })
+
         // Select just the fields we are interested in
-        .select('subject,organizer,start,end')
+        .select('subject,organizer,start,end,isAllDay')
         // Sort the results by start, earliest first
         .orderby('start/dateTime')
         // Maximum 50 events in response
-        .top(50)
+        .top(top)
         .get();
 
     } else {
@@ -125,7 +129,6 @@ export class GraphService {
       let ianaTimeZone: string = this.getTimezone(userObj);
 
       let newEvent:Event = eventBean.write(ianaTimeZone);
-
       let url:string = '/me/events';
       if (eventBean.id){
         url+='/' + eventBean.id;
@@ -144,13 +147,14 @@ export class GraphService {
     }
   }
 
+
   getTimezone(user: any): string {
     let timezone: string | null = user.mailboxSettings.timeZone;
     if (timezone) {
       console.log('Timezone:' + timezone);
       return timezone;
     } else {
-      return 'US/Aleutian';
+      return 'Europe/Berlin';
     }
   }
 
