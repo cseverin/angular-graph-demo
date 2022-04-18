@@ -8,14 +8,14 @@
   <div class="header"></div>
 -->
   <ng-container *ngFor="let month of events.list">
-    <div class="cal-headline">{{month.label}}</div>
+    <div class="cal-headline-month">{{month.label}}</div>
     <ng-container *ngFor="let week of month.list">
-      <div class="cal-headline">{{week.label}}</div>
+      <div class="cal-headline-week">{{week.label}}</div>
       <ng-container *ngFor="let item of week.list">
       <div>{{item.organizer}}</div>
       <div>{{item.betreff}}</div>
       <div>{{item.beginn?.toDate() | date: item.allDay ? 'dd.MM.yyyy':'dd.MM.yyyy HH:mm'}}{{item.allDay ? ' (ganztg)':''}}</div>
-      <div>{{item.allDay && item._numberDays==0 ? '' : (item.ende?.toDate() | date: item.allDay ? 'dd.MM.yyyy':'dd.MM.yyyy HH:mm')}}</div>
+      <div>{{item.allDay && item._numberDays==0  ? '' : (item.ende?.toDate() | date: item.allDay ? 'dd.MM.yyyy':'dd.MM.yyyy HH:mm')}}</div>
       <div><button mat-button color="primary" [routerLink]="['/edit', item.id]">Bearbeiten</button></div>
     </ng-container>
     </ng-container>

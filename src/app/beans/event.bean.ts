@@ -26,6 +26,8 @@ export class EventBean {
 
     attendees: AttendeeBean[] = [];
 
+    _minutes:number=0;
+
     onlineMeeting: boolean = false;
     onlineMeetingJoinUrl?:string;
     onlineMeetingConferenceId?:string;
@@ -89,6 +91,8 @@ export class EventBean {
             this.onlineMeeting = false;
         }
 
+        this.calcMinutes();
+
         return this;
     }
 
@@ -150,6 +154,27 @@ export class EventBean {
         return <Event>newEvent;
 
 
+    }
+
+    calcMinutes(){
+        let beginnStr:string = this.beginn?.format('DD.MM.YYYY') + '' + (this.allDay ? '00:00':this._beginnTime);
+        let beginn:Moment = moment(beginnStr, 'DD.MM.YYYY H:m');
+        let endeStr:string = this.ende?.format('DD.MM.YYYY') + '' + (this.allDay ? '00:00' : this._endeTime);
+        let ende:Moment = moment(endeStr, 'DD.MM.YYYY H:m');
+        this._minutes = ende.diff(beginn, 'minute');
+        console.log('Minutes: ' + this._minutes); 
+    }
+
+    recalcTime(){
+        let beginnStr:string = this.beginn?.format('DD.MM.YYYY') + '' + (this.allDay ? '00:00' :this._beginnTime);
+        let beginn:Moment = moment(beginnStr, 'DD.MM.YYYY H:m');
+        let ende:Moment = moment(beginn.toDate()).add(this._minutes, 'minute');
+        if (this.allDay)ende.add(1, 'day');
+        this._endeTime = ende.format('HH:mm');
+        this.ende = ende.startOf('day');
+        
+        console.log('Date:' + this.ende.toDate());
+        console.log('Time: ' + this._endeTime);
     }
 
 }

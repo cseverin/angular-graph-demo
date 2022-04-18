@@ -23,7 +23,7 @@
         <div style="grid-column: 1">
             <div class="my-label">Beginn</div>
             <mat-form-field style="width: 100%" appearance="fill">
-                <input matInput [matDatepicker]="picker1" [(ngModel)]="data.beginn">
+                <input matInput [matDatepicker]="picker1" [(ngModel)]="data.beginn" (dateChange)="changeBegin()">
                 <mat-hint>DD.MM.YYYY</mat-hint>
                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                 <mat-datepicker #picker1></mat-datepicker>
@@ -34,7 +34,7 @@
             <ng-container *ngIf="!data.allDay">
                 <div class="my-label">Beginn Uhrzeit</div>
                 <mat-form-field style="width: 100px" appearance="fill">
-                    <mat-select [(ngModel)]="data._beginnTime">
+                    <mat-select [(ngModel)]="data._beginnTime" (selectionChange)="changeBegin()">
                         <mat-option *ngFor="let item of time" [value]="item">
                             {{item}}
                         </mat-option>
@@ -45,14 +45,14 @@
 
         <div style="grid-column: 4">
             <div class="ganztg">
-                <mat-checkbox [(ngModel)]="data.allDay">ganztägig</mat-checkbox>
+                <mat-checkbox [(ngModel)]="data.allDay" (click)="changeEnd()">ganztägig</mat-checkbox>
             </div>
         </div>
 
         <div style="grid-column: 1">
             <div class="my-label">Ende</div>
             <mat-form-field style="width: 100%" appearance="fill">
-                <input matInput [matDatepicker]="picker2" [(ngModel)]="data.ende">
+                <input matInput [matDatepicker]="picker2" [(ngModel)]="data.ende" (dateChange)="changeEnd()">
                 <mat-hint>DD.MM.YYYY</mat-hint>
                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                 <mat-datepicker #picker2></mat-datepicker>
@@ -63,7 +63,7 @@
             <ng-container *ngIf="!data.allDay">
                 <div class="my-label">Uhrzeit Uhrzeit</div>
                 <mat-form-field style="width: 100px" appearance="fill">
-                    <mat-select [(ngModel)]="data._endeTime">
+                    <mat-select [(ngModel)]="data._endeTime" (selectionChange)="changeEnd()">
                         <mat-option *ngFor="let item of time" [value]="item">
                             {{item}}
                         </mat-option>
@@ -88,7 +88,7 @@
 
         <ng-container *ngIf="data.onlineMeetingJoinUrl == null">
             <div style="grid-column: 1 / span 4" class="online-meeting">
-                <mat-checkbox [(ngModel)]="data.onlineMeeting" [disabled]="data.id != null">Online Meeting
+                <mat-checkbox [(ngModel)]="data.onlineMeeting">Online Meeting
                 </mat-checkbox>
             </div>
         </ng-container>

@@ -147,4 +147,12 @@ export class EditComponent implements OnInit {
     }
   }
 
+  changeEnd(){
+    this.data?.calcMinutes();
+  }
+
+  changeBegin(){
+    this.data?.recalcTime();
+  }
+
 }
