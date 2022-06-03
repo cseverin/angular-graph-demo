@@ -28,4 +28,5 @@ https://docs.microsoft.com/de-de/graph/tutorials/javascript \
 https://outlook.office.com/calendar/view/month \
 https://aad.portal.azure.com/ \ 
 https://teams.microsoft.com
+https://github.com/Azure-Samples/active-directory-javascript-graphapi-v2/blob/quickstart/JavaScriptSPA/authRedirect.js
 
